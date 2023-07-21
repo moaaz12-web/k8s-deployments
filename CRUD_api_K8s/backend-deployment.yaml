@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: crud-api
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: crud-api
+  template:
+    metadata:
+      labels:
+        app: crud-api
+        example.com/zone: zone-1
+    spec:
+      affinity:
+        podAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchExpressions:
+                  - key: app
+                    operator: In
+                    values:
+                      - crud-api
+              topologyKey: kubernetes.io/hostname
+      containers:
+        - name: backend
+          image: maaz66/getting-started:v3
+          ports:
+            - containerPort: 4000
+          resources:
+            requests:
+              cpu: "0.5" # Request 0.5 CPU unit
+              memory: "512Mi" # Request 512 Megabytes of memory
+            limits:
+              cpu: "1" # Limit to 1 CPU unit
+              memory: "1Gi" # Limit to 1 Gigabyte of memory

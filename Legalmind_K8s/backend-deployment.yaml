@@ -1,0 +1,78 @@
+# apiVersion: apps/v1
+# kind: Deployment
+# metadata:
+#   name: backend-app
+# spec:
+#   replicas: 3
+#   selector:
+#     matchLabels:
+#       app: backend-app
+#   template:
+#     metadata:
+#       labels:
+#         app: backend-app
+#         example.com/zone: zone-1
+#     spec:
+#       affinity:
+#         podAntiAffinity:
+#           requiredDuringSchedulingIgnoredDuringExecution:
+#             - labelSelector:
+#                 matchExpressions:
+#                   - key: app
+#                     operator: In
+#                     values:
+#                       - backend-app
+#               topologyKey: kubernetes.io/hostname
+#       containers:
+#         - name: backend
+#           image: maaz66/legalmind-backend:v1
+#           ports:
+#             - containerPort: 5000
+#           resources:
+#             requests:
+#               cpu: "0.5" # Request 0.5 CPU unit
+#               memory: "512Mi" # Request 512 Megabytes of memory
+#             limits:
+#               cpu: "1" # Limit to 1 CPU unit
+#               memory: "1Gi" # Limit to 1 Gigabyte of memory
+# ! ABOVE CODE RUNS 3 PODS ON 3 DIFFERNET NODES, THATS ALL1
+
+
+#! BELOW CODE, WILL RUN 3 PODS (LEGALMIND) ON ONE NODE
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend-app
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: backend-app
+  template:
+    metadata:
+      labels:
+        app: backend-app
+        example.com/zone: zone-1
+    spec:
+      affinity:
+        podAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchExpressions:
+                  - key: app
+                    operator: In
+                    values:
+                      - backend-app
+              topologyKey: kubernetes.io/hostname
+      containers:
+        - name: backend
+          image: maaz66/legalmind-backend:v1
+          ports:
+            - containerPort: 5000
+          resources:
+            requests:
+              cpu: "0.5" # Request 0.5 CPU unit
+              memory: "512Mi" # Request 512 Megabytes of memory
+            limits:
+              cpu: "1" # Limit to 1 CPU unit
+              memory: "1Gi" # Limit to 1 Gigabyte of memory
